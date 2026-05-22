@@ -2,20 +2,34 @@ import { simpleGit } from 'simple-git';
 import fs from 'fs'
 import yaml from 'js-yaml'
 
-const REPO_PATH = "/repo";
-
+import path from "path";
+const REPO_PATH = path.resolve("./repo");
+const SENSOR_PATH = path.join(REPO_PATH, "sensor.yaml");
 const git = simpleGit(REPO_PATH);
 
 export async function commitToGit (specYaml : string, message :string, user :string) {
-  fs.writeFileSync("/repo/spec.yaml", specYaml);
+  fs.writeFileSync(SENSOR_PATH, specYaml, 'utf8');
+
+  if (!(await git.checkIsRepo())) {
+    await git.init();
+    await git.addConfig('user.name', 'hardware-vcs-bot');
+    await git.addConfig('user.email', 'hardware-vcs-bot@example.com');
+  }
+
   await git.add("./*");
   const result = await git.commit(message);
-  return {hash: result.commit};
+  const committed = Boolean(result.commit);
+  const commitHash = committed
+    ? result.commit!
+    : await git.revparse(["HEAD"]);
+  return { hash: commitHash, committed };
 }
 
 export async function getPreviousSpecYaml () {
-    fs.writeFileSync("./temp.yaml", "/repo/spec.yaml")
-    const f = await fetch('./sensor.yaml')
-    const text = await f.text()
-    return {previousSpecYaml : text};    
+    try {
+        const text = fs.readFileSync(SENSOR_PATH, "utf8");
+        return { previousSpecYaml: text };
+    } catch (err) {
+        return null;
+    }
 }
