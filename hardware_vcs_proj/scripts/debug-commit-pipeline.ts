@@ -6,7 +6,7 @@ async function main() {
     const result = await runCommitPipeline({
       specYaml: `layers:
   sensing:
-    capture_antibody: 48
+    capture_antibody: 47
 `,
       message: "decrease capture_antibody",
       user: "yupentacat",
