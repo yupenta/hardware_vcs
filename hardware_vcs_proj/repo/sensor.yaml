@@ -1,20 +1,3 @@
-project:
-  name: Stressomic
-  version: 0.1
-
 layers:
-  - id: auND_leg
-    material: gold
-    thickness_um: 20
-    file: auND_leg.dxf
-
-  - id: substrate
-    material: PDMS
-    thickness_um: 500
-
-#project metadata
-# components
-# materials
-# linked CAD files
-
-# App will read this file and render UI from it
+  sensing:
+    capture_antibody: 50
